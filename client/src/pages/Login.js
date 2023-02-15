@@ -8,6 +8,8 @@ import * as yup from "yup";
 import classes from "./Login.module.css";
 import PersonIcon from "@mui/icons-material/Person";
 import HttpsIcon from "@mui/icons-material/Https";
+import { fetchToken, onMessageListener } from '../api/firebase';
+import api from '../api/customAxios';
 // import Error from 'components/layout/Error'
 
 const schema = yup
@@ -34,6 +36,14 @@ const LoginScreen = () => {
     const { payload } = await dispatch(userLogin(data))
     if (payload.status !== "OK"){
       alert(payload.message)
+    }
+    else {
+      fetchToken().then((res) => {
+        console.dir(res)
+        api({method: 'put', url: '/member/fcm', data: {"fcmToken": res.currentToken } }).then((res)=>{
+          console.dir(res);
+        })
+      });
     }
   };
 
